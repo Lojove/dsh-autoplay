@@ -239,7 +239,8 @@ window.__ModuleLoader__.load({
       const running = state.running === true;
       const latest = state.latest ?? null;
       const percent = percentOf(latest);
-      const events = Array.isArray(state.log) ? state.log.slice(-10).reverse() : [];
+      // 宿主一次给 60 条，这里全用上（原来只取 10 条，一次连播几小时也只看得到几分钟）
+      const events = Array.isArray(state.log) ? state.log.slice(-30).reverse() : [];
       const rules = Array.isArray(state.rules) ? state.rules : [];
 
       return h(
@@ -370,7 +371,11 @@ window.__ModuleLoader__.load({
         'style',
         null,
         `
-.cw-root { display: flex; flex-direction: column; gap: 12px; padding: 20px 24px 32px; max-width: 860px; color: var(--dsw-alias-label-primary, #1f2328); font-size: 13px; }
+/* 中央面板要自己滚：主面板容器不替内容滚动，所以这里占满高度并向内滚动。
+   否则内容一高就被裁掉、页面又滑不动——原来在设置页时有外层滚动容器，搬过来才暴露。 */
+.cw-root { display: flex; flex-direction: column; gap: 12px; height: 100%; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain; padding: 20px 24px 32px; color: var(--dsw-alias-label-primary, #1f2328); font-size: 13px; }
+/* 滚动条留在列边缘，内容限宽以便阅读 */
+.cw-root > * { max-width: 860px; }
 /* 品牌色底上的前景色必须用页面底色（bg-base）而不是写死 #fff：
    深色模式下 brand-primary 是浅色，写死白字会变成「白底白字」看不见。
    brand-primary 按定义要与 bg-base 形成对比，所以 bg-base 就是它的反色。 */
@@ -401,22 +406,27 @@ window.__ModuleLoader__.load({
 .cw-metric-label { color: var(--dsw-alias-label-secondary, #57606a); font-size: 12px; margin-bottom: 4px; }
 .cw-metric-value { font-size: 16px; font-weight: 600; }
 .cw-sub { font-weight: 600; margin-top: 4px; }
-.cw-log { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow: auto; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--dsw-alias-border-l1, #d8dee4); background: var(--dsw-alias-bg-layer-2, #f6f8fa); }
+/* 高度随窗口走。关键是**同时给 min-height**：只写 max-height 的话它只封顶、不撑高，
+   事件少的时候框会缩成两三行高（看起来就是「框不够高」）。 */
+.cw-log { display: flex; flex-direction: column; gap: 4px; min-height: clamp(200px, 34vh, 460px); max-height: clamp(300px, 52vh, 760px); overflow-y: auto; overflow-x: hidden; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--dsw-alias-border-l1, #d8dee4); background: var(--dsw-alias-bg-layer-2, #f6f8fa); }
 .cw-logline { display: flex; gap: 8px; line-height: 1.5; }
 .cw-logtime { color: var(--dsw-alias-label-secondary, #57606a); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
-.cw-logtext { flex: 1 1 auto; }
+/* min-width:0 是关键：flex 子项默认 min-width:auto，会拒绝收缩到内容宽度以下，
+   于是播报里那条长 URL 会撑宽整行、被横向裁掉（看着像"这一栏太窄"）。
+   overflow-wrap:anywhere 让没有空格的长串也能断行。 */
+.cw-logtext { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
 .cw-rules { display: flex; flex-direction: column; gap: 6px; }
 .cw-rule { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--dsw-alias-border-l1, #d8dee4); background: var(--dsw-alias-bg-layer-1, #fff); }
 .cw-rule-main { display: flex; align-items: center; gap: 8px; flex: 1 1 auto; flex-wrap: wrap; }
 .cw-rule-name { font-weight: 600; }
-.cw-rule-match { color: var(--dsw-alias-label-secondary, #57606a); font-family: ui-monospace, Consolas, monospace; font-size: 11px; }
+.cw-rule-match { color: var(--dsw-alias-label-secondary, #57606a); font-family: ui-monospace, Consolas, monospace; font-size: 11px; min-width: 0; overflow-wrap: anywhere; }
 .cw-badge { font-size: 11px; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; }
 .cw-badge.is-user { color: var(--dsw-alias-brand-primary, #0969da); }
 .cw-badge.is-builtin { color: var(--dsw-alias-state-idle-primary, #8c959f); }
-.cw-rule-note { flex: 1 1 100%; font-size: 12px; color: var(--dsw-alias-label-secondary, #57606a); }
+.cw-rule-note { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; font-size: 12px; color: var(--dsw-alias-label-secondary, #57606a); }
 .cw-rule-note.is-warn { color: var(--dsw-alias-state-warn-primary, #9a6700); }
 .cw-rule-note.is-error { color: var(--dsw-alias-state-error-primary, #cf222e); }
-.cw-pre { margin: 0; max-height: 320px; overflow: auto; padding: 10px; border-radius: 6px; border: 1px solid var(--dsw-alias-border-l1, #d8dee4); background: var(--dsw-alias-bg-layer-2, #f6f8fa); font-family: ui-monospace, Consolas, monospace; font-size: 11px; line-height: 1.55; white-space: pre-wrap; }
+.cw-pre { margin: 0; max-height: 320px; overflow: auto; padding: 10px; border-radius: 6px; border: 1px solid var(--dsw-alias-border-l1, #d8dee4); background: var(--dsw-alias-bg-layer-2, #f6f8fa); font-family: ui-monospace, Consolas, monospace; font-size: 11px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 .cw-pre.is-spec { max-height: 460px; }
 `,
       );

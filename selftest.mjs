@@ -103,6 +103,30 @@ check('主按钮背景用品牌 token', /background:\s*var\(--dsw-alias-brand-pr
 check('主按钮前景用 token 而非字面量', /color:\s*var\(/.test(primaryRule), true);
 check('主按钮前景没有写死颜色', /color:\s*#/.test(primaryRule), false);
 
+// 9. 中央面板必须自己是滚动容器。
+//    主面板容器不替内容滚动；漏了这两条，内容一高就被裁掉且页面滑不动。
+const rootRule = (clientSource.match(/\.cw-root\s*\{[^}]*\}/) ?? [''])[0];
+check('找得到面板根样式规则', rootRule.length > 0, true);
+check('面板根占满高度', /height:\s*100%/.test(rootRule), true);
+check('面板根纵向可滚动', /overflow-y:\s*auto/.test(rootRule), true);
+
+// 10. 动态日志的文字必须能换行并且能被压缩。
+//     flex 子项默认 min-width:auto，长 URL 会撑宽整行、被横向裁掉
+//     （用户看到的就是「这一栏太窄、显示不全」）。
+const logTextRule = (clientSource.match(/\.cw-logtext\s*\{[^}]*\}/) ?? [''])[0];
+check('找得到动态日志文本样式规则', logTextRule.length > 0, true);
+check('日志文本可收缩（min-width:0）', /min-width:\s*0/.test(logTextRule), true);
+check('日志文本允许长串断行', /overflow-wrap:\s*anywhere/.test(logTextRule), true);
+
+// 11. 动态日志的高度必须够看、且随窗口变化。
+//     写死成小固定值（曾经是 260px）只能看到三四条，换窗口大小也不变。
+const logRule = (clientSource.match(/\.cw-log\s*\{[^}]*\}/) ?? [''])[0];
+check('找得到动态日志容器样式规则', logRule.length > 0, true);
+check('动态日志高度用 clamp 自适应', /max-height:\s*clamp\(/.test(logRule), true);
+check('动态日志高度随视口变化', /\d+vh/.test(logRule), true);
+// 只写 max-height 的话它只封顶、不撑高：事件少时框会缩成两三行高。
+check('动态日志有最小高度（事件少时也不塌）', /min-height:\s*clamp\(/.test(logRule), true);
+
 const failed = cases.filter((entry) => !entry.pass);
 for (const entry of cases) {
   const suffix = entry.pass ? '' : `\n      expected ${JSON.stringify(entry.expected)}\n      actual   ${JSON.stringify(entry.actual)}`;

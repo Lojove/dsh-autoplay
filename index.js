@@ -143,6 +143,33 @@ export function apply(ctx, config = {}) {
     if (record.event === "advanced") runtime.lessonsAdvanced = record.lessonNumber ?? runtime.lessonsAdvanced;
   });
 
+  /**
+   * 用上一次运行留下的日志开头。
+   * 内存里的事件流是空的（刚启动），不播种的话「最近动态」会是一片空白，
+   * 看起来像功能坏了。
+   */
+  async function seedLogFromFile() {
+    try {
+      const text = await readFile(join(dataDir, "watch.log"), "utf8");
+      const records = [];
+      for (const line of text.split("\n").slice(-60)) {
+        if (line.trim().length === 0) continue;
+        try {
+          records.push(JSON.parse(line));
+        } catch {
+          /* 跳过坏行 */
+        }
+      }
+      if (records.length === 0) return;
+      runtime.log = records.slice(-LOG_LIMIT);
+      runtime.latest = runtime.log.at(-1) ?? null;
+      const lastAdvanced = [...runtime.log].reverse().find((record) => record.event === "advanced");
+      runtime.lessonsAdvanced = lastAdvanced?.lessonNumber ?? runtime.lessonsAdvanced;
+    } catch {
+      /* 首次运行没有日志文件 */
+    }
+  }
+
   const sendJson = (res, value, status = 200) => {
     res.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
     res.end(JSON.stringify(value));
@@ -366,7 +393,7 @@ export function apply(ctx, config = {}) {
       browserFound: findBrowser() !== null,
       profile: profileDir(),
       latest: runtime.latest,
-      log: runtime.log.slice(-40),
+      log: runtime.log.slice(-60),
       persisted,
       rules: ruleSummary(),
       rulesDir: userRulesDir,
@@ -420,6 +447,7 @@ export function apply(ctx, config = {}) {
       }
       await mkdir(userRulesDir, { recursive: true });
       await loadSettings();
+      await seedLogFromFile();
       await reloadRules();
       disposeRoute = ctx.webServer.register({ kind: "prefix", path: "/dsh-autoplay", handler });
     })();
