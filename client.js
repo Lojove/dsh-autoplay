@@ -376,6 +376,10 @@ window.__ModuleLoader__.load({
 .cw-root { display: flex; flex-direction: column; gap: 12px; height: 100%; box-sizing: border-box; overflow-y: auto; overscroll-behavior: contain; padding: 20px 24px 32px; color: var(--dsw-alias-label-primary, #1f2328); font-size: 13px; }
 /* 滚动条留在列边缘，内容限宽以便阅读 */
 .cw-root > * { max-width: 860px; }
+/* 面板内一律 border-box。否则带 padding/border 的盒子在 max-width 下会按内容盒计算，
+   比邻居宽出 padding+border——实测「最近动态」比其它框宽 22px（20 padding + 2 border）。
+   表单控件天然就是 border-box，所以只有这种 div 会歪。 */
+.cw-root, .cw-root * { box-sizing: border-box; }
 /* 品牌色底上的前景色必须用页面底色（bg-base）而不是写死 #fff：
    深色模式下 brand-primary 是浅色，写死白字会变成「白底白字」看不见。
    brand-primary 按定义要与 bg-base 形成对比，所以 bg-base 就是它的反色。 */

@@ -126,6 +126,9 @@ check('动态日志高度用 clamp 自适应', /max-height:\s*clamp\(/.test(logR
 check('动态日志高度随视口变化', /\d+vh/.test(logRule), true);
 // 只写 max-height 的话它只封顶、不撑高：事件少时框会缩成两三行高。
 check('动态日志有最小高度（事件少时也不塌）', /min-height:\s*clamp\(/.test(logRule), true);
+// 面板内必须统一 border-box，否则带 padding/border 的盒子会比邻居宽出 padding+border
+// （实测「最近动态」宽 22px）。
+check('面板内统一 border-box', /\.cw-root,\s*\.cw-root \*\s*\{[^}]*box-sizing:\s*border-box/.test(clientSource), true);
 
 const failed = cases.filter((entry) => !entry.pass);
 for (const entry of cases) {
