@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "title": "刷课连播",
+    "description": "用带调试端口的 Chrome 挂住课程视频，本节播完自动翻到下一节，并跳过习题。"
+  },
+  "tab": "刷课连播",
+  "title": "刷课连播",
+  "desc": "自动播放课程视频，本节播完自动翻到下一节，并跳过习题。启动后会打开一个带调试端口的独立 Chrome 窗口。",
+  "placeholder": "课程视频页地址，例如 https://…/video/12345",
+  "start": "启动并监控",
+  "stop": "停止",
+  "running": "监控中",
+  "starting": "启动中",
+  "idle": "已停止",
+  "working": "处理中…",
+  "lesson": "当前进度",
+  "advanced": "本次已连播",
+  "port": "调试端口",
+  "profile": "独立配置目录",
+  "events": "最近动态",
+  "no-events": "还没有动态。点上面的按钮开始。",
+  "connecting": "正在连接宿主插件…",
+  "started": "已启动，Chrome 正在打开课程页。首次使用请在那个窗口里登录。",
+  "stopped": "已停止监控。",
+  "no-browser": "没找到 Chrome 或 Edge，无法启动浏览器。",
+  "tip": "提示：第一次使用需要在那个人工打开的 Chrome 窗口里登录课程平台，登录态会保存在独立配置目录里。",
+  "persisted": "上次运行留下的状态："
+}

@@ -1,0 +1,19 @@
+{
+  "id": "graduate-xuetangx",
+  "name": "学堂在线研究生院",
+  "version": 1,
+  "match": ["graduate.xuetangx.com"],
+  "advance": {
+    "navItem": {
+      "item": ".menu-content-item",
+      "activeClass": "is-active",
+      "idPattern": "^unit-item-(\\d+)$",
+      "hrefFromId": true,
+      "tag": ".item-type",
+      "title": ".item-name",
+      "videoTagText": "视频",
+      "progress": null
+    }
+  },
+  "note": "目录项自带 id=\"unit-item-<视频id>\"，而当前页地址里就是同一个视频 id；折叠章节里的项是 display:none（每个叶子外面套了一层自己的 .menu-content，只有当前项那层展开），点隐藏元素能否触发没有保证，所以用 hrefFromId 直接从 id 反推下一个视频地址跳过去，最确定。"
+}

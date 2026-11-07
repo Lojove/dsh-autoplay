@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Course watch">
+  <rect x="4" y="10" width="46" height="34" rx="6" fill="none" stroke="#247bbf" stroke-width="4"/>
+  <path d="M23 21l13 7-13 7z" fill="#247bbf"/>
+  <path d="M42 22l9 7-9 7" fill="none" stroke="#247bbf" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 52h24" fill="none" stroke="#247bbf" stroke-width="4" stroke-linecap="round"/>
+</svg>

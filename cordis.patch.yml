@@ -1,0 +1,3 @@
+- insert:
+    - id: autoplay
+      name: '@local/dsh-autoplay'

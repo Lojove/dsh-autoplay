@@ -1,0 +1,11 @@
+# 统一换行：仓库内一律 LF。
+# 不设这个的话，Windows 上提交、Linux/macOS 上克隆会出现整文件 diff。
+* text=auto eol=lf
+
+# 资源不做换行转换
+*.svg text
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary

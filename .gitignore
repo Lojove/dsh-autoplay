@@ -1,0 +1,15 @@
+# 运行时产物（默认落在 %USERPROFILE%\.dsh\course-watch\，但以防有人改到包里）
+state/
+*.log
+
+# 依赖：本插件没有任何运行时依赖，列在这里只是防止误提交
+node_modules/
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 本地临时脚本（我自己调试时会用到 _xxx.mjs 这种命名）
+_*.mjs

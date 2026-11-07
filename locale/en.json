@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "title": "Course watch",
+    "description": "Opens Chrome with a debug port and keeps a course video playing, advancing to the next lesson and skipping exercises."
+  },
+  "tab": "Course watch",
+  "title": "Course watch",
+  "desc": "Plays the course video and moves to the next lesson automatically when one finishes, skipping exercises. It opens a separate Chrome window with a debug port.",
+  "placeholder": "Course video page URL, e.g. https://…/video/12345",
+  "start": "Start watching",
+  "stop": "Stop",
+  "running": "Watching",
+  "starting": "Starting",
+  "idle": "Stopped",
+  "working": "Working…",
+  "lesson": "Progress",
+  "advanced": "Lessons advanced",
+  "port": "Debug port",
+  "profile": "Dedicated profile",
+  "events": "Recent activity",
+  "no-events": "Nothing yet. Press the button above to start.",
+  "connecting": "Connecting to the host plugin…",
+  "started": "Started. Chrome is opening the course page — log in there the first time.",
+  "stopped": "Stopped watching.",
+  "no-browser": "Chrome or Edge was not found, so the browser cannot be opened.",
+  "tip": "First run: log in to the course platform in the Chrome window that opens. The session is kept in the dedicated profile.",
+  "persisted": "State left by the previous run: "
+}

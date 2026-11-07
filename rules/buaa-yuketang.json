@@ -1,0 +1,18 @@
+{
+  "id": "buaa-yuketang",
+  "name": "北航雨课堂",
+  "version": 1,
+  "match": ["buaa.yuketang.cn"],
+  "advance": {
+    "nextUnit": ".unit-arrow.arrow-reverse",
+    "navItem": {
+      "item": ".leaf-item",
+      "activeClass": "is-active",
+      "tag": ".leaf-item-tag",
+      "title": ".leaf-item-title",
+      "videoTagText": "视频",
+      "progress": ".status-pie"
+    }
+  },
+  "note": "课程目录是纯 div + Vue 事件：没有 <a href*=/video/>，也没有 data-node-id，所以「找链接」那类策略无效。目录项用 is-active 标出正在学的一节，用 .leaf-item-tag 标类型（视频 / 作业）。播放器右上角还有一个「下一单元」箭头（带 arrow-reverse 的那个是向右），但它只会盲翻到「下一个条目」——章末就是习题页，进去既没有视频也没有目录树，所以目录树必须排在箭头前面。"
+}
