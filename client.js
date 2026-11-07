@@ -430,8 +430,9 @@ window.__ModuleLoader__.load({
 .cw-rule-note { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; font-size: 12px; color: var(--dsw-alias-label-secondary, #57606a); }
 .cw-rule-note.is-warn { color: var(--dsw-alias-state-warn-primary, #9a6700); }
 .cw-rule-note.is-error { color: var(--dsw-alias-state-error-primary, #cf222e); }
-.cw-pre { margin: 0; max-height: 320px; overflow: auto; padding: 10px; border-radius: 6px; border: 1px solid var(--dsw-alias-border-l1, #d8dee4); background: var(--dsw-alias-bg-layer-2, #f6f8fa); font-family: ui-monospace, Consolas, monospace; font-size: 11px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
-.cw-pre.is-spec { max-height: 460px; }
+/* 与「最近动态」同一个尺寸：宽同受 .cw-root > * 的 860 约束，
+   高同样要给 min-height——只写 max-height 的话它只封顶不撑高，内容短时框就塌了。 */
+.cw-pre { margin: 0; min-height: clamp(200px, 34vh, 460px); max-height: clamp(300px, 52vh, 760px); overflow: auto; padding: 10px; border-radius: 6px; border: 1px solid var(--dsw-alias-border-l1, #d8dee4); background: var(--dsw-alias-bg-layer-2, #f6f8fa); font-family: ui-monospace, Consolas, monospace; font-size: 11px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 `,
       );
     }

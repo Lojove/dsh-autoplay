@@ -130,6 +130,20 @@ check('动态日志有最小高度（事件少时也不塌）', /min-height:\s*c
 // （实测「最近动态」宽 22px）。
 check('面板内统一 border-box', /\.cw-root,\s*\.cw-root \*\s*\{[^}]*box-sizing:\s*border-box/.test(clientSource), true);
 
+// 12. 探测结果框必须和「最近动态」框同样高。
+//     只写 max-height 的话它只封顶不撑高；这里直接比对两者的取值是否一致，
+//     而不是写死像素——以后再调数值也不会误报。
+const preRule = (clientSource.match(/\.cw-pre\s*\{[^}]*\}/) ?? [''])[0];
+const heightPair = (rule) => ({
+  min: ((rule.match(/min-height:\s*([^;]+)/) ?? [])[1] ?? '').trim() || null,
+  max: ((rule.match(/max-height:\s*([^;]+)/) ?? [])[1] ?? '').trim() || null,
+});
+const logHeight = heightPair(logRule);
+const preHeight = heightPair(preRule);
+check('找得到探测结果框样式规则', preRule.length > 0, true);
+check('探测结果框有最小高度', preHeight.min !== null, true);
+check('探测结果框与动态框同高', JSON.stringify(preHeight), JSON.stringify(logHeight));
+
 const failed = cases.filter((entry) => !entry.pass);
 for (const entry of cases) {
   const suffix = entry.pass ? '' : `\n      expected ${JSON.stringify(entry.expected)}\n      actual   ${JSON.stringify(entry.actual)}`;
