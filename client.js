@@ -1,7 +1,8 @@
 /**
  * 刷课连播 · 界面半边。
  *
- * 注册为「插件」设置里的一页：填课程地址、点启动、看实时进度，并管理站点翻页规则。
+ * 注册为**左侧栏的一个入口**：侧栏多一个图标，点开就是中央面板——在里面填课程地址、
+ * 启动监控、看实时进度，并管理站点翻页规则。
  * 与宿主半边的通信走 /dsh-autoplay 路由（见 index.js 的说明）。
  */
 window.__ModuleLoader__.load({
@@ -12,6 +13,9 @@ window.__ModuleLoader__.load({
     const { useCallback, useEffect, useRef, useState } = React;
 
     const STATUS_URL = '/dsh-autoplay/status';
+    /** 侧栏图标的 id，同时也是中央面板的 key——两者必须一致。 */
+    const PANEL_ID = 'autoplay';
+    const PANEL_LABEL = '刷课连播';
 
     async function call(path, init) {
       const response = await fetch(path, init);
@@ -366,7 +370,7 @@ window.__ModuleLoader__.load({
         'style',
         null,
         `
-.cw-root { display: flex; flex-direction: column; gap: 12px; padding: 4px 2px 16px; color: var(--dsw-alias-label-primary, #1f2328); font-size: 13px; }
+.cw-root { display: flex; flex-direction: column; gap: 12px; padding: 20px 24px 32px; max-width: 860px; color: var(--dsw-alias-label-primary, #1f2328); font-size: 13px; }
 /* 品牌色底上的前景色必须用页面底色（bg-base）而不是写死 #fff：
    深色模式下 brand-primary 是浅色，写死白字会变成「白底白字」看不见。
    brand-primary 按定义要与 bg-base 形成对比，所以 bg-base 就是它的反色。 */
@@ -418,11 +422,38 @@ window.__ModuleLoader__.load({
       );
     }
 
+    /**
+     * 侧栏图标。用 currentColor 着色，随侧栏行的未选中/选中状态走，
+     * 不写死颜色（写死会在深色模式下变成看不见）。
+     */
+    function PanelIcon(props) {
+      const size = props?.size ?? 20;
+      return h(
+        'svg',
+        { width: size, height: size, viewBox: '0 0 24 24', 'aria-hidden': true, style: { display: 'block' } },
+        h('rect', { x: 2.5, y: 4.5, width: 14, height: 11, rx: 2, fill: 'none', stroke: 'currentColor', strokeWidth: 1.6 }),
+        h('path', { d: 'M7 8.2l4.2 2.6L7 13.4z', fill: 'currentColor' }),
+        h('path', {
+          d: 'M16.6 8.2l3 3-3 3',
+          fill: 'none',
+          stroke: 'currentColor',
+          strokeWidth: 1.6,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+        }),
+      );
+    }
+
     return {
       inject: ['slots'],
       apply(ctx) {
-        ctx.slots.inject('settings.plugins.tab', () =>
-          ctx.slots.register({ name: 'settings.plugins.tab', id: 'autoplay', order: 20, label: () => '刷课连播' }, () => h(Panel, { t: null })),
+        // 侧栏图标与主面板**必须成对注册**：panellist 的 id 就是 main 的 key，
+        // 侧栏靠这个 id 选中主面板；只注册图标的话，点它会因为找不到 main 条目而抛错。
+        ctx.slots.inject('sidebar.panellist', () =>
+          ctx.slots.register({ name: 'sidebar.panellist', id: PANEL_ID, order: 20, label: () => PANEL_LABEL }, PanelIcon),
+        );
+        ctx.slots.inject('main', () =>
+          ctx.slots.register({ name: 'main', key: PANEL_ID }, () => h(Panel, { t: null })),
         );
       },
     };
